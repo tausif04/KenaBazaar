@@ -1,8 +1,7 @@
 # KenaBazaar
 
-A full-stack e-commerce web application built with Django, modeled on real-world stores like [eshopdhaka.com](https://eshopdhaka.com) — product catalog, cart, checkout, accounts, and admin — built from scratch as a resume-grade backend engineering project.
+A full-stack e-commerce web application built with Django, modeled on real-world stores— product catalog, cart, checkout, accounts, and admin — built from scratch as a resume-grade backend engineering project.
 
-> **Status:** 🚧 In development — 7-day build plan, one core feature area per day. See [Build Log](#build-log--progress) below for current status.
 
 ---
 
@@ -22,8 +21,20 @@ A full-stack e-commerce web application built with Django, modeled on real-world
 
 ## Problem It Solves
 
-Most CS portfolio e-commerce projects are either a copy-pasted tutorial cart or a WordPress/WooCommerce theme with no real backend engineering behind it. KenaBazaar is built to demonstrate the opposite: a schema designed from first principles, session-vs-database tradeoffs made deliberately, a payment flow that trusts server-to-server webhooks over client redirects, and a codebase clean enough to defend line-by-line in a technical interview.
+Building **"an online store"** isn't the hard part — Shopify, WooCommerce, and a dozen tutorials do that in an afternoon. What those approaches skip is exactly what backend interviews probe:
 
+- **A tutorial cart** usually stores items in `localStorage` or a flat session dict with no thought given to what happens when a logged-in user's cart needs to merge with their guest session, or why a DB write per click is wasteful.
+- **A WordPress/WooCommerce site** (like [eshopdhaka.com](https://eshopdhaka.com), the reference for this project) gets you a working storefront with zero schema design of your own — the data model, query patterns, and security decisions are all inherited, not made.
+- **Most copy-pasted Django e-commerce tutorials** skip the parts that actually break in production: price changes after checkout, N+1 queries on the product list, trusting a browser redirect instead of a signed payment webhook.
+
+**KenaBazaar** exists to force those decisions to be made and defended, not inherited:
+
+- A schema designed from first principles — not "every field is a `CharField`".
+- Session-vs-database cart tradeoffs made deliberately, not defaulted into.
+- A payment flow that trusts server-to-server webhooks over client redirects, because the browser's word about "payment succeeded" can't be trusted.
+- A codebase clean enough to defend line-by-line in a technical interview — not just code that runs.
+
+  
 ## Tech Stack
 
 | Layer | Choice |
