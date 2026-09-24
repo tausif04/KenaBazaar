@@ -38,8 +38,40 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_filters',
     'catalog',
+    'cart',
+    "rest_framework_simplejwt.token_blacklist",  # required for LogoutView's .blacklist()
+    "accounts",
 ]
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",  # kept for browsable API / admin only
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
+    ],
+}
+
+from datetime import timedelta
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+}
+
+ # dev only — prints to terminal
+
+if not DEBUG:
+    REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [
+        "rest_framework.renderers.JSONRenderer",
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -127,3 +159,5 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+# settings.py
+AUTH_USER_MODEL = "accounts.User"

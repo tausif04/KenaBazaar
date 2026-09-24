@@ -4,8 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
 djangorestframework = "*"
+django = "*"
+django-filter = "*"
+pillow = "*"
+djangorestframework-simplejwt = "*"
 
 [dev-packages]
 
