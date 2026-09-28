@@ -7,3 +7,4 @@ router.register("cart/items", CartItemViewSet, basename="cart-item")
 router.register("wishlist", WishlistViewSet, basename="wishlist")
 
 urlpatterns = [path("cart/", CartView.as_view(), name="cart-detail")] + router.urls
+

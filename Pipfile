@@ -9,6 +9,7 @@ django = "*"
 django-filter = "*"
 pillow = "*"
 djangorestframework-simplejwt = "*"
+stripe = "*"
 
 [dev-packages]
 

@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 
 from pathlib import Path
 
+import django
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -43,6 +45,7 @@ INSTALLED_APPS = [
     'cart',
     "rest_framework_simplejwt.token_blacklist",  # required for LogoutView's .blacklist()
     "accounts",
+    "orders",
 ]
 
 REST_FRAMEWORK = {
@@ -161,3 +164,20 @@ MAILERS = {
 }
 # settings.py
 AUTH_USER_MODEL = "accounts.User"
+
+
+import os
+
+STRIPE_SECRET_KEY = os.environ["STRIPE_SECRET_KEY"]
+STRIPE_WEBHOOK_SECRET = os.environ["STRIPE_WEBHOOK_SECRET"]
+STRIPE_CURRENCY = os.environ.get("STRIPE_CURRENCY", "usd")
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+
+#superuser credentials for dev only
+# SUPERUSER_CREDENTIALS = {
+#     "username": "admin",
+#     "email": "b.tausif15@gmail.com",
+#     "password": "tamim04"
+# }
+# 
+# 
