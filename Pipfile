@@ -11,6 +11,13 @@ pillow = "*"
 djangorestframework-simplejwt = "*"
 stripe = "*"
 drf-spectacular = "*"
+psycopg = {extras = ["binary"], version = "*"}
+gunicorn = "*"
+redis = "*"
+celery = "*"
+django-cors-headers = "*"
+dj-database-url = "*"
+whitenoise = "*"
 
 [dev-packages]
 

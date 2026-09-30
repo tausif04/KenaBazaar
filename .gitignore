@@ -1,6 +1,7 @@
-pipenv/
-__pycache__/
-*.pyc
 .env
 db.sqlite3
+staticfiles/
 media/
+__pycache__/
+*.pyc
+.venv/
