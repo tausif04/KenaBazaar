@@ -10,6 +10,7 @@ django-filter = "*"
 pillow = "*"
 djangorestframework-simplejwt = "*"
 stripe = "*"
+drf-spectacular = "*"
 
 [dev-packages]
 

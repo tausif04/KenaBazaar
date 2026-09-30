@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",  # required for LogoutView's .blacklist()
     "accounts",
     "orders",
+    "drf_spectacular",
 ]
 
 REST_FRAMEWORK = {
@@ -59,6 +60,14 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
     ],
+    
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "KenaBazaar API",
+    "DESCRIPTION": "Django REST Framework backend for KenaBazaar — API-first e-commerce.",
+    "VERSION": "1.0.0",
 }
 
 from datetime import timedelta
