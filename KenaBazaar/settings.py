@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     "orders",
     "drf_spectacular",
     "corsheaders",
+    "cloudinary_storage",
+    "cloudinary",
 ]
 
 REST_FRAMEWORK = {
@@ -176,7 +178,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STORAGES = {
     "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
@@ -215,4 +217,5 @@ STRIPE_SECRET_KEY = os.environ["STRIPE_SECRET_KEY"]
 STRIPE_WEBHOOK_SECRET = os.environ["STRIPE_WEBHOOK_SECRET"]
 STRIPE_CURRENCY = os.environ.get("STRIPE_CURRENCY", "usd")
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+
 
