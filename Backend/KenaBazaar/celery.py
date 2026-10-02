@@ -1,5 +1,5 @@
 import os
-from Backend.KenaBazaar.celery import Celery
+from celery import Celery
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "KenaBazaar.settings")
 
