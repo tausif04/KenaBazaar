@@ -3,8 +3,8 @@ from django.db.models import F
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
 
-from Backend.cart.models import Cart
-from Backend.catalog.models import ProductVariant
+from cart.models import Cart
+from catalog.models import ProductVariant
 from .models import Order, OrderItem
 
 

@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-from Backend.catalog.models import ProductVariant
+from catalog.models import ProductVariant
 
 
 class Order(models.Model):
