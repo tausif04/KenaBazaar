@@ -1,9 +1,9 @@
 from rest_framework import serializers
-from catalog.models import ProductVariant
-from catalog.serializers import ProductVariantSerializer
+from Backend.catalog.models import ProductVariant
+from Backend.catalog.serializers import ProductVariantSerializer
 from .models import Cart, CartItem
-from catalog.serializers import ProductSerializer
-from catalog.models import Product
+from Backend.catalog.serializers import ProductSerializer
+from Backend.catalog.models import Product
 from .models import WishlistItem
 
 
