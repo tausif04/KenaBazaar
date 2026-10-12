@@ -1,9 +1,18 @@
 import { Routes, Route } from 'react-router-dom'
 import MainLayout from '../layouts/MainLayout'
-import PublicRoute from './PublicRoute'
 import ProtectedRoute from './ProtectedRoute'
 import Placeholder from '../pages/Placeholder'
 import NotFound from '../pages/NotFound'
+import HomePage from '../pages/HomePage'
+import ProductsPage from '../pages/ProductsPage'
+import ProductDetailsPage from '../pages/ProductDetailsPage'
+import CartPage from '../pages/CartPage'
+import WishlistPage from '../pages/WishlistPage'
+import LoginPage from '../pages/LoginPage'
+import RegisterPage from '../pages/RegisterPage'
+import ForgotPasswordPage from '../pages/ForgotPasswordPage'
+import ResetPasswordPage from '../pages/ResetPasswordPage'
+import CheckoutPage from '../pages/CheckoutPage'
 
 const page = (title) => <Placeholder title={title} />
 
@@ -11,19 +20,23 @@ export default function AppRoutes() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
-        <Route path="/" element={page('Home')} />
-        <Route path="/products" element={page('Products')} />
-        <Route path="/products/:id" element={page('Product detail')} />
-        <Route path="/cart" element={page('Cart')} />
+        {/* Customer store (built) */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/products" element={<ProductsPage />} />
+        <Route path="/products/:id" element={<ProductDetailsPage />} />
+        <Route path="/cart" element={<CartPage />} />
 
-        <Route element={<PublicRoute />}>
-          <Route path="/login" element={page('Login')} />
-          <Route path="/register" element={page('Register')} />
-          <Route path="/forgot-password" element={page('Forgot password')} />
-        </Route>
+        {/* Authentication (built). The pages redirect logged-in users themselves. */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password/:uid/:token" element={<ResetPasswordPage />} />
 
+        {/* Requires login */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/wishlist" element={page('Wishlist')} />
+          <Route path="/order/success" element={page('Order success')} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/wishlist" element={<WishlistPage />} />
           <Route path="/orders" element={page('Orders')} />
           <Route path="/orders/:id" element={page('Order detail')} />
           <Route path="/account" element={page('Account')} />
