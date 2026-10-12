@@ -1,6 +1,10 @@
 from rest_framework import views, viewsets, permissions, status
 from rest_framework.response import Response
+from django.db.models import Prefetch
+from rest_framework import views, viewsets, permissions, status
+from rest_framework.response import Response
 
+from .models import Cart, CartItem, WishlistItem
 from .models import CartItem, WishlistItem
 from .serializers import CartSerializer, CartItemSerializer, WishlistItemSerializer
 from .services import CartService
@@ -11,6 +15,14 @@ class CartView(views.APIView):
 
     def get(self, request):
         cart = CartService.get_cart(request)
+        # Load items, variants, products and images in a fixed number of queries (no N+1).
+        cart = Cart.objects.prefetch_related(
+            Prefetch(
+                "items",
+                queryset=CartItem.objects.select_related("variant__product")
+                .prefetch_related("variant__product__images"),
+            )
+        ).get(pk=cart.pk)
         return Response(CartSerializer(cart).data)
 
 

@@ -1,15 +1,14 @@
 from rest_framework import serializers
-from catalog.models import ProductVariant
-from catalog.serializers import ProductVariantSerializer
-from .models import Cart, CartItem
-from catalog.serializers import ProductSerializer
-from catalog.models import Product
-from .models import WishlistItem
+
+from catalog.models import Product, ProductVariant
+from catalog.serializers import ProductSerializer, ProductVariantSerializer
+
+from .models import Cart, CartItem, WishlistItem
 
 
 class WishlistItemSerializer(serializers.ModelSerializer):
-    product = ProductSerializer(read_only=True)                         # nested, for display
-    product_id = serializers.PrimaryKeyRelatedField(                     # flat, for writing
+    product = ProductSerializer(read_only=True)  # nested, for display
+    product_id = serializers.PrimaryKeyRelatedField(  # flat, for writing
         queryset=Product.objects.all(), source="product", write_only=True,
     )
 
@@ -17,16 +16,33 @@ class WishlistItemSerializer(serializers.ModelSerializer):
         model = WishlistItem
         fields = ["id", "product", "product_id", "added_at"]
 
+
+class CartProductSerializer(serializers.ModelSerializer):
+    """Small product summary for cart rows (not the full product with all variants/images)."""
+
+    image = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Product
+        fields = ["id", "name", "slug", "regular_price", "sale_price", "current_price", "image"]
+
+    def get_image(self, obj):
+        images = list(obj.images.all())  # uses the prefetch, no extra query
+        chosen = next((i for i in images if i.is_primary), images[0] if images else None)
+        return chosen.image.url if chosen else None
+
+
 class CartItemSerializer(serializers.ModelSerializer):
-    variant = ProductVariantSerializer(read_only=True)                 # nested, for display
-    variant_id = serializers.PrimaryKeyRelatedField(                    # flat, for writing
+    variant = ProductVariantSerializer(read_only=True)  # nested, for display
+    product = CartProductSerializer(source="variant.product", read_only=True)
+    variant_id = serializers.PrimaryKeyRelatedField(  # flat, for writing
         queryset=ProductVariant.objects.all(), source="variant", write_only=True,
     )
     subtotal = serializers.SerializerMethodField()
 
     class Meta:
         model = CartItem
-        fields = ["id", "variant", "variant_id", "quantity", "subtotal"]
+        fields = ["id", "product", "variant", "variant_id", "quantity", "subtotal"]
 
     def get_subtotal(self, obj):
         return obj.variant.product.current_price * obj.quantity
