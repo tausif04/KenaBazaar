@@ -1,7 +1,8 @@
-import { Outlet } from 'react-router-dom'
+import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { useAuth } from '../features/auth/hooks'
 
-// Foundation stub: passes everyone through. The auth phase will read
-// state.auth.isAuthenticated and redirect to /login when false.
 export default function ProtectedRoute() {
-  return <Outlet />
+  const { isAuthenticated } = useAuth()
+  const location = useLocation()
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace state={{ from: location }} />
 }

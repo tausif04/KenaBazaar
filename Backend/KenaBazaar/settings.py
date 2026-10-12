@@ -112,11 +112,22 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ALLOWED_ORIGINS = os.environ.get(
-    "CORS_ALLOWED_ORIGINS",
-    "http://localhost:3000"
-).split(",")
-
+CORS_ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get(
+        "CORS_ALLOWED_ORIGINS",
+        "http://localhost:5173,http://localhost:3000",
+    ).split(",")
+    if origin.strip()
+]
+CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
+    if origin.strip()
+]
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SAMESITE = "None" if not DEBUG else "Lax"
 ROOT_URLCONF = 'KenaBazaar.urls'
 
 TEMPLATES = [
@@ -222,6 +233,6 @@ import os
 STRIPE_SECRET_KEY = os.environ["STRIPE_SECRET_KEY"]
 STRIPE_WEBHOOK_SECRET = os.environ["STRIPE_WEBHOOK_SECRET"]
 STRIPE_CURRENCY = os.environ.get("STRIPE_CURRENCY", "usd")
-FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:5173")
 
 
