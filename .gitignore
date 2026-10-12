@@ -5,3 +5,14 @@ media/
 __pycache__/
 *.pyc
 .venv/
+.postman/
+postman/
+
+!.env.example
+__pycache__/
+*.py[cod]
+*.sqlite3
+staticfiles/
+media/
+.venv/
+venv/
