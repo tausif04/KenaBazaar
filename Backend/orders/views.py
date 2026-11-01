@@ -65,7 +65,8 @@ def stripe_webhook(request):
 
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
-        if session.get("payment_status") == "paid":
-            mark_order_paid(int(session["metadata"]["order_id"]))
+        if session["payment_status"] == "paid":
+            order_id = session["metadata"]["order_id"]
+            mark_order_paid(int(order_id))
 
     return Response(status=status.HTTP_200_OK)    # 200 for events we ignore, so Stripe stops retrying

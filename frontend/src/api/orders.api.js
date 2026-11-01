@@ -14,7 +14,10 @@ export async function createCheckoutSession({ shipping_name, shipping_phone, shi
 // GET /orders/ (JWT) -> Order[]  (used in the Orders phase)
 export async function getOrders() {
     const { data } = await api.get('/orders/')
-    return data
+    // DRF returns a plain array, or { count, next, previous, results } when paginated.
+    if (Array.isArray(data)) return data
+    if (Array.isArray(data?.results)) return data.results
+    throw new Error('Unexpected orders response. Check VITE_API_BASE_URL.')
 }
 
 // GET /orders/{id}/ (JWT) -> { id, status, total, shipping_*, items[], created_at, paid_at }

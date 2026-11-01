@@ -55,3 +55,23 @@ def mark_order_paid(order_id):
     order.save(update_fields=["status", "paid_at"])
     Cart.objects.filter(user=order.user).delete()      # cart clears on payment, not on checkout
     return order
+
+ALLOWED = {"processing": {"shipped"}, "shipped": {"delivered"}, "delivered": set()}
+
+@transaction.atomic
+def set_delivery_status(order_id, new_status):
+    # Row lock: a second caller waits here, then re-reads the fresh state.
+    order = Order.objects.select_for_update().get(pk=order_id)
+
+    if order.status != Order.Status.PAID:
+        raise ValueError("Only paid orders can be shipped.")
+    if new_status not in ALLOWED[order.delivery_status]:
+        raise ValueError(f"Cannot go from {order.delivery_status} to {new_status}.")
+
+    order.delivery_status = new_status
+    if new_status == "shipped":
+        order.shipped_at = timezone.now()
+    elif new_status == "delivered":
+        order.delivered_at = timezone.now()
+    order.save(update_fields=["delivery_status", "shipped_at", "delivered_at"])
+    return order

@@ -9,10 +9,18 @@ class Order(models.Model):
         PAID = "paid", "Paid"
         CANCELLED = "cancelled", "Cancelled"
 
+    class DeliveryStatus(models.TextChoices):
+        PROCESSING = "processing", "Processing"
+        SHIPPED = "shipped", "Shipped"
+        DELIVERED = "delivered", "Delivered"
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="orders",
     )
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+    delivery_status = models.CharField(
+        max_length=20, choices=DeliveryStatus.choices, default=DeliveryStatus.PROCESSING,
+    )
     total = models.DecimalField(max_digits=12, decimal_places=2)
     shipping_name = models.CharField(max_length=150)
     shipping_phone = models.CharField(max_length=20)
@@ -20,10 +28,13 @@ class Order(models.Model):
     stripe_session_id = models.CharField(max_length=255, blank=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     paid_at = models.DateTimeField(null=True, blank=True)
+    shipped_at = models.DateTimeField(null=True, blank=True)
+    delivered_at = models.DateTimeField(null=True, blank=True)
+    courier = models.CharField(max_length=50, blank=True)
+    tracking_number = models.CharField(max_length=100, blank=True)
 
     class Meta:
         ordering = ["-created_at"]
-
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")

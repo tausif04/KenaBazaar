@@ -13,6 +13,10 @@ import RegisterPage from '../pages/RegisterPage'
 import ForgotPasswordPage from '../pages/ForgotPasswordPage'
 import ResetPasswordPage from '../pages/ResetPasswordPage'
 import CheckoutPage from '../pages/CheckoutPage'
+import OrderSuccessPage from '../pages/OrderSuccessPage'
+import OrdersPage from '../pages/OrdersPage'
+import OrderDetailPage from '../pages/OrderDetailPage'
+
 
 const page = (title) => <Placeholder title={title} />
 
@@ -34,11 +38,11 @@ export default function AppRoutes() {
 
         {/* Requires login */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/order/success" element={page('Order success')} />
+          <Route path="/order/success" element={<OrderSuccessPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/wishlist" element={<WishlistPage />} />
-          <Route path="/orders" element={page('Orders')} />
-          <Route path="/orders/:id" element={page('Order detail')} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/orders/:id" element={<OrderDetailPage />} />
           <Route path="/account" element={page('Account')} />
           <Route path="/seller/*" element={page('Seller panel')} />
           <Route path="/admin/*" element={page('Admin panel')} />

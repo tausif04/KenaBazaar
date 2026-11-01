@@ -4,14 +4,19 @@ import toast from 'react-hot-toast'
 import { queryKeys } from '../../api/queryKeys'
 import { getWishlist, addToWishlist, removeFromWishlist } from '../../api/wishlist.api'
 import { getErrorMessage, isAuthError } from '../../utils/getErrorMessage'
+import { useAuth } from '../auth/hooks'
 
-export const useWishlist = () =>
-    useQuery({
+export const useWishlist = () => {
+    const { isAuthenticated } = useAuth()
+
+    return useQuery({
         queryKey: queryKeys.wishlist,
         queryFn: getWishlist,
+        enabled: isAuthenticated,
         staleTime: 60 * 1000,
         retry: (count, err) => !isAuthError(err) && count < 2,
     })
+}
 
 // Map productId -> wishlistItemId so hearts know their state and what to DELETE.
 // Never throws: a bad response just means "empty wishlist" here.

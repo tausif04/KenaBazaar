@@ -16,3 +16,5 @@ staticfiles/
 media/
 .venv/
 venv/
+
+.env.example
