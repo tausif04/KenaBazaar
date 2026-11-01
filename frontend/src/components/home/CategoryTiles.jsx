@@ -47,7 +47,7 @@ export default function CategoryTiles() {
     }
 
     return (
-        <section aria-labelledby="cats-title">
+        <section id="categories" aria-labelledby="cats-title">
             <h2 id="cats-title" className="mb-4 text-xl font-bold md:text-2xl">Shop by category</h2>
             {body}
         </section>

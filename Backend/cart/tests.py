@@ -3,6 +3,7 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from catalog.models import Product, ProductVariant
+from sellers.testing import make_shop
 
 User = get_user_model()
 
@@ -13,7 +14,9 @@ class CartFlowAPITests(APITestCase):
         token = RefreshToken.for_user(self.user).access_token
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
 
-        product = Product.objects.create(name="Abaya", regular_price=1500, is_active=True)
+        product = Product.objects.create(
+            name="Abaya", regular_price=1500, is_active=True, seller=make_shop(),
+        )
         self.variant = ProductVariant.objects.create(product=product, sku="AB-M-BLK", stock=10)
 
     def test_add_item_to_cart(self):

@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'cart',
     "rest_framework_simplejwt.token_blacklist",  # required for LogoutView's .blacklist()
     "accounts",
+    "sellers",
     "orders",
     "drf_spectacular",
     "corsheaders",
@@ -77,6 +78,7 @@ REST_FRAMEWORK = {
     ],
     
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_THROTTLE_RATES": {"seller_apply": "5/day"},
 }
 
 SPECTACULAR_SETTINGS = {

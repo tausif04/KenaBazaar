@@ -16,6 +16,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from cart.services import CartService
+from sellers.serializers import SellerSummarySerializer
 from .serializers import RegisterSerializer
 
 User = get_user_model()
@@ -121,6 +122,12 @@ class CurrentUserView(views.APIView):
             "id": request.user.pk,
             "email": request.user.email,
             "full_name": request.user.full_name,
+            # None for plain customers; lets React choose the seller screen
+            # without ever treating a hidden button as security.
+            "seller": (
+                SellerSummarySerializer(request.user.seller_profile).data
+                if hasattr(request.user, "seller_profile") else None
+            ),
         })
 
 

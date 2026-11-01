@@ -9,11 +9,17 @@ class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0
     can_delete = False
-    fields = ("product_name", "sku", "quantity", "price_at_purchase")
+    fields = (
+        "product_name", "sku", "quantity", "price_at_purchase",
+        "seller", "fulfillment_status", "courier", "tracking_number",
+    )
     readonly_fields = fields  # snapshots must never be edited
 
     def has_add_permission(self, request, obj=None):
         return False
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related("seller")  # avoids N+1 on seller
 
 
 @admin.register(Order)

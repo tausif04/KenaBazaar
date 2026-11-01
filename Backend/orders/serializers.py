@@ -13,7 +13,11 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrderItem
-        fields = ["id", "product_name", "sku", "price_at_purchase", "quantity", "line_total"]
+        fields = [
+            "id", "product_name", "sku", "price_at_purchase", "quantity", "line_total",
+            "fulfillment_status", "courier", "tracking_number", "shipped_at", "delivered_at",
+        ]
+        read_only_fields = fields
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -21,6 +25,6 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ["id", "status", "total", "shipping_name", "shipping_phone",
-                  "shipping_address", "items", "created_at", "paid_at"]
+        fields = ["id", "status", "delivery_status", "total", "shipping_name",
+                  "shipping_phone", "shipping_address", "items", "created_at", "paid_at"]
         read_only_fields = fields

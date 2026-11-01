@@ -50,6 +50,7 @@ class AuthFlowAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {
             "id": user.pk, "email": user.email, "full_name": user.full_name,
+            "seller": None,   # plain customers have no seller profile
         })
 
     def test_password_reset_confirm_rejects_mismatched_passwords(self):

@@ -29,6 +29,7 @@ def create_order_from_cart(user, shipping):
         total += price * item.quantity
         rows.append(OrderItem(
             order=order, variant=item.variant,
+            seller_id=item.variant.product.seller_id,   # snapshot
             product_name=item.variant.product.name, sku=item.variant.sku,
             price_at_purchase=price, quantity=item.quantity,
         ))
@@ -57,9 +58,45 @@ def mark_order_paid(order_id):
     return order
 
 ALLOWED = {"processing": {"shipped"}, "shipped": {"delivered"}, "delivered": set()}
+STAGE = {"processing": 0, "shipped": 1, "delivered": 2}
+
+
+def _sync_order_delivery(order):
+    """Order-level status is derived from its items: it is only as far along as
+    the slowest parcel. One seller shipping early must not mark the whole order shipped."""
+    statuses = list(order.items.values_list("fulfillment_status", flat=True))
+    lowest = min(statuses, key=STAGE.__getitem__) if statuses else "processing"
+    if lowest == order.delivery_status:
+        return order
+    now = timezone.now()
+    order.delivery_status = lowest
+    if lowest in ("shipped", "delivered") and not order.shipped_at:
+        order.shipped_at = now
+    if lowest == "delivered":
+        order.delivered_at = now
+    order.save(update_fields=["delivery_status", "shipped_at", "delivered_at"])
+    return order
+
+
+def _advance_item(item, new_status, now, courier="", tracking_number=""):
+    item.fulfillment_status = new_status
+    if courier:
+        item.courier = courier
+    if tracking_number:
+        item.tracking_number = tracking_number
+    if new_status == "shipped":
+        item.shipped_at = now
+    elif new_status == "delivered":
+        item.shipped_at = item.shipped_at or now
+        item.delivered_at = now
+    item.save(update_fields=[
+        "fulfillment_status", "courier", "tracking_number", "shipped_at", "delivered_at",
+    ])
+
 
 @transaction.atomic
 def set_delivery_status(order_id, new_status):
+    """Admin path: moves every item of the order, then re-derives the order status."""
     # Row lock: a second caller waits here, then re-reads the fresh state.
     order = Order.objects.select_for_update().get(pk=order_id)
 
@@ -68,10 +105,31 @@ def set_delivery_status(order_id, new_status):
     if new_status not in ALLOWED[order.delivery_status]:
         raise ValueError(f"Cannot go from {order.delivery_status} to {new_status}.")
 
-    order.delivery_status = new_status
-    if new_status == "shipped":
-        order.shipped_at = timezone.now()
-    elif new_status == "delivered":
-        order.delivered_at = timezone.now()
-    order.save(update_fields=["delivery_status", "shipped_at", "delivered_at"])
-    return order
+    now = timezone.now()
+    for item in order.items.select_for_update():
+        if STAGE[item.fulfillment_status] < STAGE[new_status]:   # never move an item backwards
+            _advance_item(item, new_status, now, order.courier, order.tracking_number)
+    return _sync_order_delivery(order)
+
+
+@transaction.atomic
+def set_seller_fulfillment(order_id, seller, new_status, courier="", tracking_number=""):
+    """Seller path: moves only THIS seller's items (one parcel per seller per order)."""
+    # Same lock order as set_delivery_status (order row first), so an admin action
+    # and a seller action on the same order cannot deadlock each other.
+    order = Order.objects.select_for_update().get(pk=order_id)
+    if order.status != Order.Status.PAID:
+        raise ValueError("Only paid orders can be fulfilled.")
+
+    items = list(order.items.select_for_update().filter(seller=seller))
+    if not items:
+        raise ValueError("This order has no items from your shop.")
+
+    eligible = [i for i in items if new_status in ALLOWED[i.fulfillment_status]]
+    if not eligible:
+        raise ValueError(f"These items cannot be moved to {new_status}.")
+
+    now = timezone.now()
+    for item in eligible:
+        _advance_item(item, new_status, now, courier, tracking_number)
+    return _sync_order_delivery(order)
