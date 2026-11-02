@@ -1,10 +1,11 @@
-import { Link } from 'react-router-dom';
 import { CreditCard, PackageCheck, ShieldCheck } from 'lucide-react';
 import { useProducts } from '../features/products/hooks';
+import HeroCarousel from '../components/home/HeroCarousel';
+import ShortcutTiles from '../components/home/ShortcutTiles';
+import DealsSection from '../components/home/DealsSection';
 import CategoryTiles from '../components/home/CategoryTiles';
 import ProductSection from '../components/home/ProductSection';
 import { isOnSale } from '../utils/format';
-import { buttonClasses } from '../utils/ui';
 
 const TRUST = [
     { icon: CreditCard, title: 'Secure checkout', text: 'Payments are handled by Stripe.' },
@@ -22,22 +23,16 @@ export default function HomePage() {
 
     return (
         <div className="space-y-10">
-            <section className="overflow-hidden rounded-2xl bg-orange-600 px-6 py-10 text-white md:px-12 md:py-16">
-                <h1 className="max-w-xl text-3xl font-extrabold leading-tight md:text-5xl">Everything you need, delivered from KenaBazaar.</h1>
-                <p className="mt-3 max-w-lg text-orange-50">Browse the latest products, find deals and check out securely.</p>
-                <div className="mt-6 flex flex-wrap gap-3">
-                    <Link to="/products" className={`${buttonClasses('outline', 'lg')} border-white`}>Shop now</Link>
-                    <Link to="/products?ordering=-created_at" className={`${buttonClasses('ghost', 'lg')} text-white hover:bg-orange-700`}>New arrivals</Link>
-                </div>
-            </section>
+            <h1 className="sr-only">KenaBazaar home</h1>
+            <HeroCarousel />
+            <ShortcutTiles />
+
+            <DealsSection deals={deals} isLoading={latest.isLoading} error={latest.error} onRetry={latest.refetch} />
 
             <CategoryTiles />
 
             <ProductSection id="featured" title="Featured products" viewAllTo="/products"
                 products={featured.data?.results ?? []} isLoading={featured.isLoading} error={featured.error} onRetry={featured.refetch} />
-
-            <ProductSection id="deals" title="Deals" subtitle="Products currently on sale" accent hideWhenEmpty
-                products={deals} isLoading={latest.isLoading} error={latest.error} onRetry={latest.refetch} />
 
             <ProductSection id="new" title="New arrivals" viewAllTo="/products?ordering=-created_at"
                 products={newArrivals} isLoading={latest.isLoading} error={latest.error} onRetry={latest.refetch} />

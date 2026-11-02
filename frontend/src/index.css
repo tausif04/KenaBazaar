@@ -30,3 +30,7 @@
     @apply outline-2 outline-offset-2 outline-brand-500;
   }
 }
+
+/* Home-page shortcut links jump to sections; keep headings clear of the sticky navbar. */
+[id] { scroll-margin-top: 6rem; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }

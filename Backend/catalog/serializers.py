@@ -41,18 +41,3 @@ class ProductSerializer(serializers.ModelSerializer):
             "categories", "is_active", "created_at", "updated_at",
             "variants", "images",
         ]
-
-    def create(self, validated_data):
-        categories = validated_data.pop("categories", [])
-        product = Product.objects.create(**validated_data)
-        product.categories.set(categories)
-        return product
-
-    def update(self, instance, validated_data):
-        categories = validated_data.pop("categories", None)
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-        if categories is not None:
-            instance.categories.set(categories)
-        return instance

@@ -37,8 +37,25 @@ class Order(models.Model):
         ordering = ["-created_at"]
 
 class OrderItem(models.Model):
+    class Fulfillment(models.TextChoices):
+        PROCESSING = "processing", "Processing"
+        SHIPPED = "shipped", "Shipped"
+        DELIVERED = "delivered", "Delivered"
+
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
     variant = models.ForeignKey(ProductVariant, on_delete=models.PROTECT)
+    seller = models.ForeignKey(                               # snapshot, like price_at_purchase
+        "sellers.SellerProfile", on_delete=models.PROTECT,
+        related_name="order_items",
+    )
+    fulfillment_status = models.CharField(
+        max_length=20, choices=Fulfillment.choices,
+        default=Fulfillment.PROCESSING, db_index=True,
+    )
+    courier = models.CharField(max_length=50, blank=True)
+    tracking_number = models.CharField(max_length=100, blank=True)
+    shipped_at = models.DateTimeField(null=True, blank=True)
+    delivered_at = models.DateTimeField(null=True, blank=True)
     product_name = models.CharField(max_length=200)          # snapshot
     sku = models.CharField(max_length=64)                     # snapshot
     price_at_purchase = models.DecimalField(max_digits=10, decimal_places=2)  # snapshot

@@ -20,3 +20,9 @@ export const primaryImage = (product) =>
 
 export const variantLabel = (v) =>
     [v?.size, v?.color].filter(Boolean).join(' / ') || v?.sku || 'Default';
+
+// Whole-number percent off, for display only (the API already decides current_price).
+export const discountPercent = (product) =>
+    isOnSale(product)
+        ? Math.round((1 - Number(product.sale_price) / Number(product.regular_price)) * 100)
+        : 0;

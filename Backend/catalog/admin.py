@@ -10,7 +10,7 @@ class ProductVariantInline(admin.TabularInline):
 
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
-    extra = 1  # note: the model allows at most one primary + one non-primary image
+    extra = 3  # any number of gallery images; the DB allows at most one primary
 
 
 @admin.register(Category)
@@ -21,8 +21,11 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("name", "regular_price", "sale_price", "is_active", "created_at")
-    list_filter = ("is_active", "categories")
+    list_display = ("name", "seller", "regular_price", "sale_price", "is_active", "created_at")
+    list_filter = ("is_active", "seller", "categories")
     search_fields = ("name", "description")
     filter_horizontal = ("categories",)
+    autocomplete_fields = ("seller",)  # needs SellerProfileAdmin.search_fields
     inlines = [ProductVariantInline, ProductImageInline]
+    list_select_related = ("seller",)  # avoids one seller query per row (N+1)
+    readonly_fields = ("slug",)       # generated in Product.save(), unique by construction
